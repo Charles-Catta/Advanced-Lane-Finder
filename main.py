@@ -18,7 +18,7 @@ if __name__ == "__main__":
     n_cols = 5
     plt.figure(figsize=(15, 10))
 
-    for idx, img in enumerate(test_imgs):
+    """for idx, img in enumerate(test_imgs):
         img = lane_viewer.read_img(img)
         view = lane_viewer.birds_eye_view(img)
         color_selection = lane_detect.color_threshold(view)
@@ -50,4 +50,7 @@ if __name__ == "__main__":
                     idx * n_cols + 5).set_title("Final Selection", fontsize=8)
         plt.imshow(final_selection)
 
-    plt.show()
+    plt.show()"""
+
+img = cv2.imread("test_images/straight_lines1.jpg")
+cv2.imshow("image", img)

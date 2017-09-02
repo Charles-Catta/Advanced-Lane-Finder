@@ -7,13 +7,12 @@ class LaneIsolator(object):
         isolate lane lines
     """
 
-    def __init__(self, lane_camera=None):
-        self.camera = lane_camera
-        self.L_THRESHOLD = (120, 255)  # L in LUV color space
-        self.S_THRESHOLD = (105, 255)  # S in HLS color space
-        self.B_THRESHOLD = (180, 210)  # B in Lab color space
-        self.MAG_THRESHOLD = (30, 235)  # Gradient magnitude
-        self.DIR_THRESHOLD = (0, np.pi / 2)  # Gradient direction
+    def __init__(self):
+        self.L_THRESHOLD = (75, 255)  # L in LUV color space
+        self.S_THRESHOLD = (85, 235)  # S in HLS color space
+        self.B_THRESHOLD = (100, 220)  # B in Lab color space
+        self.MAG_THRESHOLD = (40, 215)  # Gradient magnitude
+        self.DIR_THRESHOLD = (0, np.pi / 7)  # Gradient direction
 
     def isolate_lines(self, img):
         """ Isolates lane lines from the image using an ensemble of color and
@@ -21,9 +20,8 @@ class LaneIsolator(object):
             :param img: Input BGR image from the camera
             :return: A bitmap where 1s are the selected areas
         """
-        equalized = self.eq_histogram(img)
-        color_select = self.color_threshold(equalized)
-        grad_select = self.gradient_threshold(equalized)
+        color_select = self.color_threshold(img)
+        grad_select = self.gradient_threshold(img)
         selection = np.zeros_like(color_select)
         selection[(color_select == 1) | (grad_select == 1)] = 1
         return selection
@@ -67,7 +65,7 @@ class LaneIsolator(object):
 
         selection = np.zeros_like(l_chan)
         # Color is sensitive, that's why it's an OR operator
-        selection[(l_thresh == 1) & (s_thresh == 1) | (b_thresh == 1)] = 1
+        selection[(l_thresh == 1) & (s_thresh == 1) & (b_thresh == 1)] = 1
 
         return selection
 
