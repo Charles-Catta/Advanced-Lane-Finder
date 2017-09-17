@@ -7,9 +7,10 @@ class CameraInput(object):
 
     def __init__(self, video_input):
         """
-        :param video_input: Input video file or a device
+        :param video_input: Input video file or device
         """
         self.stream = cv2.VideoCapture(video_input)
+        assert self.stream.isOpened(), "Error opening video stream"
 
     def __del__(self):
         self.stream.release()

@@ -5,7 +5,7 @@ from CameraInput import CameraInput
 
 class LaneCamera(CameraInput):
     """
-    A camera object that can be calibrated and get a birds eye view
+    A camera that can be calibrated and get a birds eye view
     """
 
     def __init__(self, video_input):
@@ -25,6 +25,9 @@ class LaneCamera(CameraInput):
             [960, 0],
             [920, 720]
         ])
+        self.projection_matrix = cv2.getPerspectiveTransform(self.src_pts,
+                                                             self.dest_pts)
+        self.inverse_projection_matrix = np.linalg.inv(self.projection_matrix)
 
     def calibrate(self, calibration_imgs, chessboard):
         """Calibrates the camera based on the given ChessBoard object and images
@@ -99,6 +102,8 @@ class LaneCamera(CameraInput):
         """
         self.src_pts = src_pts
         self.dest_pts = dest_pts
+        self.projection_matrix = cv2.getPerspectiveTransform(self.src_pts,
+                                                             self.dest_pts)
 
     def _undistort(self, img):
         """ Undistort the image using the data found during calibration
@@ -120,6 +125,13 @@ class LaneCamera(CameraInput):
         """
         img = self._undistort(img)
         img_y, img_x = img.shape[0:2]
-        projection_matrix = cv2.getPerspectiveTransform(self.src_pts,
-                                                        self.dest_pts)
-        return cv2.warpPerspective(img, projection_matrix, (img_x, img_y))
+        return cv2.warpPerspective(img, self.projection_matrix, (img_x, img_y))
+
+    def inverse_birds_eye_view(self, img):
+        """ Does the inverse perspective transform done in the
+            birds_eye_view method
+            :param img: Input image to unwarp
+            :return: Unwarped image
+        """
+        img_y, img_x = img.shape[0:2]
+        return cv2.warpPerspective(img, self.inverse_projection_matrix, (img_x, img_y))

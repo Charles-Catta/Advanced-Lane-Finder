@@ -1,4 +1,5 @@
 import cv2
+import threading
 import numpy as np
 
 
@@ -7,7 +8,17 @@ class LaneIsolator(object):
         isolate lane lines
     """
 
-    def set_calibration(self, l_thresh, s_thresh, b_thresh, mag_thresh, dir_thresh):
+    def __init__(self):
+        self.L_THRESHOLD = (75, 255)  # L in LUV color space
+        self.S_THRESHOLD = (85, 235)  # S in HLS color space
+        self.B_THRESHOLD = (100, 220)  # B in Lab color space
+        self.MAG_THRESHOLD = (40, 215)  # Gradient magnitude
+        self.DIR_THRESHOLD = (0, np.pi / 7)  # Gradient direction
+
+    def set_thresholds(self, l_thresh, s_thresh, b_thresh,
+                       mag_thresh, dir_thresh):
+        """ Set the thresholds used during lane isolation
+        """
         self.L_THRESHOLD = l_thresh
         self.S_THRESHOLD = s_thresh
         self.B_THRESHOLD = b_thresh
@@ -39,16 +50,6 @@ class LaneIsolator(object):
         thresholded = np.zeros_like(array)
         thresholded[(array >= min_val) & (array <= max_val)] = 1
         return thresholded
-
-    def eq_histogram(self, img):
-        """ Equalizes the histogram of the input image for better detection
-        :param img: Input 3 channel image from the camera
-        :return: An equalized 3 channel image
-        """
-        img[:, :, 0] = cv2.equalizeHist(img[:, :, 0])
-        img[:, :, 1] = cv2.equalizeHist(img[:, :, 1])
-        img[:, :, 2] = cv2.equalizeHist(img[:, :, 2])
-        return img
 
     def color_threshold(self, img):
         """ Applies color selection over the image to attempt to isolate the lines
