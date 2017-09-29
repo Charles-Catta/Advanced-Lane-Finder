@@ -4,17 +4,13 @@ import cv2
 class CameraInput(object):
     """ A base class for our Camera that integrates all image/video input methods
     """
-
+    
     def __init__(self, video_input):
-        """
-        :param video_input: Input video file or device
-        """
         self.stream = cv2.VideoCapture(video_input)
-        assert self.stream.isOpened(), "Error opening video stream"
-
+        
     def __del__(self):
         self.stream.release()
-
+        
     def get_frame(self):
         """ Get a single video frame
         :return: One frame of the video
@@ -22,6 +18,8 @@ class CameraInput(object):
         ret, frame = self.stream.read()
         if ret:
             return frame
+        else:
+            print("No Data")
 
     def read_img(self, input_img):
         """ Reads an image from a path to a numpy array in BGR

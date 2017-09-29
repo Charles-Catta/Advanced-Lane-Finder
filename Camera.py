@@ -8,8 +8,8 @@ class LaneCamera(CameraInput):
     A camera that can be calibrated and get a birds eye view
     """
 
-    def __init__(self, video_input):
-        super().__init__(video_input)
+    def __init__(self, camera_input):
+        super().__init__(camera_input)
         self.calibrated = False
         self.camera_matrix = None
         self.distortion_coeffs = None

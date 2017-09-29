@@ -19,6 +19,8 @@ class SlidingWindowDetector(object):
         self.win_min_px = win_min_px
         self.prev_left_lane = None
         self.prev_right_lane = None
+        self.ym_per_pix = 30/720
+        self.xm_per_pix = 3.7/700
 
     def get_lane_poly(self, img):
         """ Function that fits detected lane lines to polynomials
@@ -26,13 +28,22 @@ class SlidingWindowDetector(object):
             :return: Array of 2 polynomials
         """
         if (not self.got_first_frame):
-            left_lane, right_lane = self._first_search(img)
-        elif self.video_stream:
-            left_lane, right_lane = self._next_frame_search(img)
+            left_x, left_y, right_x, right_y = self._first_search(img)
+            self.got_first_frame = True
         else:
-            left_lane, right_lane = self._first_search(img)
-        return (left_lane, right_lane)
-
+            left_x, left_y, right_x, right_y = self._next_frame_search(img)
+        
+        left_fit_m = np.polyfit(left_y * self.ym_per_pix, left_x * self.xm_per_pix, 2)
+        right_fit_m = np.polyfit(right_y * self.ym_per_pix, right_x * self.xm_per_pix, 2)
+        
+        left_fit = np.polyfit(left_y, left_x, 2)
+        right_fit = np.polyfit(right_y, right_x, 2)
+        
+        self.prev_left_lane = left_fit
+        self.prev_right_lane = right_fit
+        
+        return (left_fit, right_fit, left_fit_m, right_fit_m)
+        
     def _first_search(self, img):
         """ Does a full sliding window search over the image, usually
             only for the first frame of a video
@@ -83,12 +94,7 @@ class SlidingWindowDetector(object):
         left_y = non_zero_y[left_idxs]
         right_x = non_zero_x[right_idxs]
         right_y = non_zero_y[right_idxs]
-        left_fit = np.polyfit(left_y, left_x, 2)
-        right_fit = np.polyfit(right_y, right_x, 2)
-        self.got_first_frame = True
-        self.prev_left_lane = left_fit
-        self.prev_right_lane = right_fit
-        return (left_fit, right_fit)
+        return (left_x, left_y, right_x, right_y)
 
     def _next_frame_search(self, img):
         """ Does a fuzzy sliding window search close to the last detected lane lines
@@ -115,22 +121,4 @@ class SlidingWindowDetector(object):
         left_y = non_zero_y[left_lane_inds]
         right_x = non_zero_x[right_lane_inds]
         right_y = non_zero_y[right_lane_inds]
-        # Fit second order polynomials
-        left_fit = np.polyfit(left_y, left_x, 2)
-        right_fit = np.polyfit(right_y, right_x, 2)
-        self.prev_left_lane = left_fit
-        self.prev_right_lane = right_fit
-        return (left_fit, right_fit)
-
-    def draw_lane_mask(self, lanes_fit, color=(0, 255, 0), img_shape=(720, 1280)):
-        left_fit, right_fit = lanes_fit
-        mask = np.zeros(img_shape)
-
-    def compute_curvature(self, left_fit, right_fit):
-        """ Computes and returns meter-valued lane curvature based on the lane fit
-        :param left_fit: 2nd degree polynomial fit of the left lane
-        :param right_fit: 2nd degree polynomial fit of the right lane
-        :return: Tuple of left and right lane curvature
-        """
-
-        return (left_fit, right_fit)
+        return (left_x, left_y, right_x, right_y)
