@@ -27,11 +27,13 @@ class SlidingWindowDetector(object):
             :param img: Image of the isolated lane line pixels
             :return: Array of 2 polynomials
         """
-        if (not self.got_first_frame):
-            left_x, left_y, right_x, right_y = self._first_search(img)
-            self.got_first_frame = True
-        else:
-            left_x, left_y, right_x, right_y = self._next_frame_search(img)
+        #if (self.got_first_frame == False):
+        left_x, left_y, right_x, right_y = self._first_search(img)
+        #    self.got_first_frame = True
+        #else:
+        #    left_x, left_y, right_x, right_y = self._next_frame_search(img)
+        #    if len(left_x) == 0 or len(right_x) == 0:
+        #        left_x, left_y, right_x, right_y = self._first_search(img)
         
         left_fit_m = np.polyfit(left_y * self.ym_per_pix, left_x * self.xm_per_pix, 2)
         right_fit_m = np.polyfit(right_y * self.ym_per_pix, right_x * self.xm_per_pix, 2)

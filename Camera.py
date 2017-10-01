@@ -3,13 +3,12 @@ import numpy as np
 from CameraInput import CameraInput
 
 
-class LaneCamera(CameraInput):
+class LaneCamera(object):
     """
     A camera that can be calibrated and get a birds eye view
     """
 
-    def __init__(self, camera_input):
-        super().__init__(camera_input)
+    def __init__(self):
         self.calibrated = False
         self.camera_matrix = None
         self.distortion_coeffs = None
