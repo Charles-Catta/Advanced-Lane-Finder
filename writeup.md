@@ -65,7 +65,7 @@ Putting all of the 7 steps together, the pipeline can be resumed in one figure:
 ---
 
 ### Video Pipeline
-Here's a [link to my video result](./output_project_video.mp4)
+Here's a [link to my video result](./fixed_output_project_video.mp4)
 #### Smoothing
 We can smooth out the line by taking the average of the few past lines before. We can also verify that the lane makes sense by using a few metrics, in my case I used area and change from previous lane, if the new lane's area value does not make sense or it's line positions is far from the last detected lane lines, the new lane values are discarded. All of this is implemented in the *LaneSmoother* class. 
 
