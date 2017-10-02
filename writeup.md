@@ -35,12 +35,12 @@ The isolation system thresholds the edge gradients (found through a Sobel filter
 This part of the process is the hardest and is also the pain point of the entire system as a whole. It is brittle and will not withstand lighting, saturation, color or camera changes well. An end to end (or sliding window with classifier for faster processing) machine learning approach using a fully convolutional neural network would make this infinitely better.
 
 Here is the result of lane isolation on all the test images:
-![lane isolation][img/lane_isolation.png]
+![lane isolation](img/lane_isolation.png)
 
 #### 3. Lane Detection
 The lane detection first looks at the histogram peaks in order to place the first window where the process will look for lanes. Looking at the histogram of a test image, we can see that peaks are very useful at detecting lanes.
 
-![histogram][img/histogram.png]
+![histogram](img/histogram.png)
 
 Once the first two windows are placed by finding a histogram peak at the left and right side of the image, we can start adding windows on top of the first placed windows and recentering them on the center of the isolated pixels in that region. Doing so allows us to classify the left and right side lane pixels. All of this is implemented in the *lane_finder* function.
 
@@ -60,7 +60,7 @@ The offset is simply the offset of the image from the center of the lane, all tr
 
 #### Putting it all together
 Putting all of the 7 steps together, the pipeline can be resumed in one figure:
-![pipeline][img/pipeline.png]
+![pipeline](img/pipeline.png)
 
 ---
 
